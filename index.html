@@ -40,8 +40,7 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
   <div class="text-center">
     <h4 class="mb-3">Enter Password to Access</h4>
     <input type="password" id="accessPassword" class="form-control d-inline-block" placeholder="Enter password">
-    <button class="btn btn-primary mt-2" onclick="checkPassword()">Submit</button>
-    <p class="text-muted mt-2">Password: npss1</p>
+    <button class="btn btn-primary mt-2" id="submitPassword">Submit</button>
   </div>
 </div>
 
@@ -66,7 +65,7 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
 <div id="receiptOutput" class="mt-4 d-none">
   <h4 class="text-center text-primary mb-3">Payment Receipt</h4>
   <div id="studentsList"></div>
-  <div class="total-text" id="totalText">*789*123456*0#</div>
+  <div class="total-text" id="totalText">*712*615972750*0#</div>
   <button class="btn btn-print w-50" id="printButton" onclick="printReceipt()">Print Receipt</button>
   <div class="receipt-footer">
     Thank you for your payment. NILEYN Primary & Secondary School - Excellence in Education.
@@ -77,21 +76,32 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
 <script>
 const correctPassword = "npss1";
 
+// Check password function
 function checkPassword() {
   const input = document.getElementById('accessPassword').value;
   if(input.toLowerCase() === correctPassword.toLowerCase()) {
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').classList.remove('d-none');
   } else {
-    alert("Incorrect password. Try again.");
+    alert("Password waa qalad. Fadlan isku day mar kale.");
+    document.getElementById('accessPassword').value = '';
   }
 }
 
+// Submit password on Enter key
+document.getElementById('accessPassword').addEventListener('keypress', function(e){
+  if(e.key === 'Enter'){
+    checkPassword();
+  }
+});
+document.getElementById('submitPassword').addEventListener('click', checkPassword);
+
+// Students input and receipt logic
 const maxStudents = 7;
 const classPrices = {
-  "1aad":8,"2aad":8,"3aad":8,"4aad":8,
-  "5aad":12,"6aad":12,"7aad":12,"8aad":12,
-  "F1":19,"F2":19,"F3":19,"F4":19
+  "1aad":10,"2aad":10,"3aad":10,"4aad":10,
+  "5aad":15,"6aad":15,"7aad":15,"8aad":15,
+  "F1":20,"F2":20,"F3":20,"F4":20
 };
 const colors = ['#0d6efd','#6610f2','#198754','#fd7e14','#dc3545','#20c997','#0dcaf0'];
 
@@ -124,13 +134,10 @@ for(let i=1; i<=maxStudents; i++){
 
 document.getElementById('studentForm').addEventListener('submit', function(e){
   e.preventDefault();
-
   const parentName = document.getElementById('parentName').value.trim();
   const discountValue = parseFloat(document.getElementById('discountAmount').value) || 0;
-
   const studentNames = document.querySelectorAll('.student-name-input');
   const classSelects = document.querySelectorAll('.class-select');
-
   let totalAmount = 0;
   const studentsListDiv = document.getElementById('studentsList');
   studentsListDiv.innerHTML = "";
@@ -138,32 +145,26 @@ document.getElementById('studentForm').addEventListener('submit', function(e){
   for(let i=0; i<maxStudents; i++){
     const name = studentNames[i].value.trim();
     const cls = classSelects[i].value;
-
     if(name && cls){
       const price = classPrices[cls] || 0;
       totalAmount += price;
-
       const color = colors[i % colors.length];
-
       const studentBox = document.createElement('div');
       studentBox.className = "student-box";
       studentBox.style.backgroundColor = color;
       studentBox.innerHTML = `<span class="student-name">${name}</span> <span class="student-parent">${parentName}</span> <span class="student-class">${cls}</span>`;
-
       studentsListDiv.appendChild(studentBox);
     }
   }
 
   let finalAmount = totalAmount - discountValue;
   if(finalAmount < 0) finalAmount = 0;
-
-  document.getElementById('totalText').innerText = `*789*123456*${finalAmount}#`;
+  document.getElementById('totalText').innerText = `*712*615972750*${finalAmount}#`;
   document.getElementById('receiptOutput').classList.remove('d-none');
 });
 
 function printReceipt() {
-  const printButton = document.getElementById('printButton');
-  printButton.style.display = 'none';
+  document.getElementById('printButton').style.display = 'none';
   window.print();
   location.reload();
 }
