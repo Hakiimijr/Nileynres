@@ -18,33 +18,34 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
 
 /* Print styling for A5 */
 @media print {
-  @page {
-    size: A5 portrait;
-    margin: 10mm;
-  }
+  @page { size: A5 portrait; margin: 10mm; }
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .btn-print, .btn-generate, form { display: none; }
-  .student-box { 
-    color: #000 !important; 
-    background-color: #f2f2f2 !important; 
-    border: 1px solid #000 !important; 
-    font-size: 12px; 
-    padding: 10px !important;
-  }
-  .total-text { 
-    color: #000 !important; 
-    background-color: #ccc !important; 
-    border: 1px solid #000 !important; 
-    font-size: 14px; 
-    padding: 10px !important;
-  }
+  .student-box { color: #000 !important; background-color: #f2f2f2 !important; border: 1px solid #000 !important; font-size: 12px; padding: 10px !important; }
+  .total-text { color: #000 !important; background-color: #ccc !important; border: 1px solid #000 !important; font-size: 14px; padding: 10px !important; }
   .receipt-footer { color: #000 !important; border-top: 1px solid #000 !important; font-size: 12px; }
 }
+
+/* Password overlay */
+#passwordOverlay {
+  position: fixed; top:0; left:0; width:100%; height:100%; background:#f0f4f8; display:flex; align-items:center; justify-content:center; z-index:9999;
+}
+#passwordOverlay input { width: 250px; margin-right:10px; }
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- Password Overlay -->
+<div id="passwordOverlay">
+  <div class="text-center">
+    <h4 class="mb-3">Enter Password to Access</h4>
+    <input type="password" id="accessPassword" class="form-control d-inline-block" placeholder="Enter password">
+    <button class="btn btn-primary mt-2" onclick="checkPassword()">Submit</button>
+    <p class="text-muted mt-2">Password: npss1</p>
+  </div>
+</div>
+
+<div class="container d-none" id="mainContent">
 <h2 class="text-center mb-4">NILEYN School - Payment Receipt</h2>
 
 <form id="studentForm">
@@ -53,7 +54,6 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
     <input type="text" class="form-control" id="parentName" placeholder="Enter parent name" required>
   </div>
 
-  <!-- Discount Input -->
   <div class="mb-3 border p-3 rounded">
     <label class="form-label">Discount Amount (optional)</label>
     <input type="number" class="form-control" id="discountAmount" placeholder="Enter discount amount">
@@ -75,6 +75,18 @@ body { background: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sa
 </div>
 
 <script>
+const correctPassword = "npss1";
+
+function checkPassword() {
+  const input = document.getElementById('accessPassword').value;
+  if(input.toLowerCase() === correctPassword.toLowerCase()) {
+    document.getElementById('passwordOverlay').style.display = 'none';
+    document.getElementById('mainContent').classList.remove('d-none');
+  } else {
+    alert("Incorrect password. Try again.");
+  }
+}
+
 const maxStudents = 7;
 const classPrices = {
   "1aad":8,"2aad":8,"3aad":8,"4aad":8,
@@ -84,8 +96,6 @@ const classPrices = {
 const colors = ['#0d6efd','#6610f2','#198754','#fd7e14','#dc3545','#20c997','#0dcaf0'];
 
 const studentInputsDiv = document.getElementById('studentInputs');
-
-// Generate student input fields
 for(let i=1; i<=maxStudents; i++){
   const div = document.createElement('div');
   div.className = "mb-3 border p-3 rounded";
@@ -125,7 +135,6 @@ document.getElementById('studentForm').addEventListener('submit', function(e){
   const studentsListDiv = document.getElementById('studentsList');
   studentsListDiv.innerHTML = "";
 
-  // Collect student data
   for(let i=0; i<maxStudents; i++){
     const name = studentNames[i].value.trim();
     const cls = classSelects[i].value;
@@ -145,7 +154,6 @@ document.getElementById('studentForm').addEventListener('submit', function(e){
     }
   }
 
-  // Subtract discount
   let finalAmount = totalAmount - discountValue;
   if(finalAmount < 0) finalAmount = 0;
 
